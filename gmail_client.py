@@ -1,6 +1,7 @@
 import os.path
 from defaults import SCOPES
 import json
+import base64
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -30,9 +31,12 @@ try:
     service = build("gmail", "v1", credentials=creds)
     result = service.users().messages().list(userId="me", labelIds=["INBOX"], q="after:2025/10/28 before:2025/10/30").execute()
     mails = result.get("messages",[])
-    first_mail_id = mails[0]["id"]
+    first_mail_id = mails[18]["id"]
     msg_info = service.users().messages().get(userId="me", id=first_mail_id).execute()
-    print(msg_info.get("snippet",[]))
+    attachment_id= msg_info.get("payload").get("parts")[1].get("body").get("attachmentId")
+    attachment = service.users().messages().attachments().get(userId="me", messageId=first_mail_id, id = attachment_id).execute()
+    with open("attachment.pdf", "wb") as f:
+        f.write(base64.urlsafe_b64decode(attachment.get("data").encode("utf-8")))
 
 except HttpError as e:
     print(f"some shit happened: {e}")
