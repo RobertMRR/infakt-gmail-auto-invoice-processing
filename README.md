@@ -1,1 +1,1 @@
-"# infakt-gmail-auto-invoice-processing" 
+Integration between Infakt and gmail to automatically process invoices from given time range
